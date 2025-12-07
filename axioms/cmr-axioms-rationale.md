@@ -1,150 +1,102 @@
-# CORA Axioms — Rationale
-Why CORA requires exactly these three axioms — no more and no less.
+# Rationale for the CMR Axioms  
+Why these three axioms — and why only these three?
 
-CORA is defined by three minimal axioms:
+CMR's design principles were not chosen for convenience.  
+They were chosen because they uniquely satisfy four goals:
 
-1. **Capability is the only authority.**  
-2. **All interaction occurs only through message passing.**  
-3. **Capabilities transfer only by explicit message.**
+- **Minimality**  
+- **Security & Isolation**  
+- **Explainability**  
+- **RFC suitability**
 
-This document explains why each axiom is necessary, why none can be removed,
-and why together they form a complete and minimal foundation for the CORA model.
-
----
-
-## Axiom 1 — Capability is the Only Authority
-
-### Why this axiom is necessary
-If authority can come from sources other than capabilities — such as
-process identity, global variables, ambient privileges, inherited handles,
-or implicit OS context — then authority becomes:
-
-- non-local  
-- unpredictable  
-- difficult to audit  
-- vulnerable to accidental leaks  
-
-By defining *all* authority as capabilities, CORA enables:
-
-- **local reasoning** — a task’s authority = the capabilities it holds  
-- **predictability** — no hidden power  
-- **uniformity** — all resources and actions reduced to one primitive  
-- **least authority by construction**  
-
-### Why it cannot be removed
-Without this axiom, capabilities lose meaning because ambient privilege would still exist.
-
-### Why it cannot be merged with the other axioms
-Axiom 1 answers: **What is authority?**  
-Axiom 2 and 3 answer: **How authority is used and moved?**  
-Completely different dimensions.
+Below是每条公理存在的理由。
 
 ---
 
-## Axiom 2 — All Interaction Occurs Only via Message Passing
+# **1. Why “Authority derives only from capabilities”?**
 
-### Why this axiom is necessary
-If objects can affect one another without message passing — via shared memory,
-global namespaces, implicit I/O, or hidden side effects — then:
+Because any other source of authority creates ambiguity:
 
-- capabilities no longer define all possible effects  
-- authority flow becomes ambiguous  
-- isolation breaks  
-- distributed and local semantics diverge  
+- user identity  
+- global privileges  
+- inherited rights  
+- ambient power (e.g., POSIX uid/gid)  
+- implicit access from context  
 
-Restricting all interaction to explicit messages provides:
+These models are the root cause of:
 
-- **traceability** — every effect has a causal message  
-- **isolation** — no message = no interaction  
-- **distributed-ready semantics** — local ≡ remote  
-- **deterministic reasoning** — effects form a message graph  
+- privilege escalation  
+- confused deputy attacks  
+- ambient authority abuse  
 
-### Why it cannot be removed
-Removing this axiom collapses CORA into a traditional OS with unpredictable side effects.
-
-### Why it cannot be merged with Axiom 1
-Axiom 1 defines *who may act*;  
-Axiom 2 defines *how actions occur*.  
-Both are needed independently.
+Capabilities eliminate all of these by replacing *implicit* authority with *explicit possession*.
 
 ---
 
-## Axiom 3 — Capabilities Transfer Only by Explicit Message
+# **2. Why “All communication occurs only via messages”?**
 
-### Why this axiom is necessary
-If capabilities can move implicitly — through forking, global tables, shared pages,
-inheritance, or runtime auto-propagation — then:
+Shared memory → race conditions, data leakage, aliasing  
+Signals → implicit channels  
+Global state → unpredictable behavior
 
-- authority leaks become inevitable  
-- capability ownership cannot be audited  
-- least authority cannot be enforced  
-- formal verification becomes impossible  
+Messages are:
 
-By requiring explicit transfer, CORA ensures:
+- explicit  
+- traceable  
+- inspectable  
+- formalizable  
+- secure  
+- schedulable  
 
-- **auditability of authority flow**  
-- **no accidental leakage**  
-- **true encapsulation**  
-- **predictable, controllable capability ownership**  
+A message-only world is the simplest universe where task interaction remains **fully auditable**.
 
-### Why it cannot be removed
-Implicit transfer destroys the core property of capability systems:
-control over authority propagation.
-
-### Why it cannot be merged with Axiom 2
-Axiom 2 governs *effects*;  
-Axiom 3 governs *authority movement*.  
-Message passing ≠ capability passing — these must be distinct rules.
+This is essential for both reasoning and RFC standardization.
 
 ---
 
-## Why exactly these three axioms?
+# **3. Why “Capabilities transfer only via explicit messages”?**
 
-These axioms answer three orthogonal questions:
+If capabilities could be duplicated or leaked implicitly:
 
-| Fundamental Question | Corresponding Axiom |
-|----------------------|---------------------|
-| **What is authority?** | Axiom 1 |
-| **How do objects interact?** | Axiom 2 |
-| **How does authority flow?** | Axiom 3 |
+- authority becomes untrackable  
+- delegation becomes invisible  
+- TCB expands  
+- formal analysis collapses  
 
-Together they form a **closed minimal set**:
+Explicit transfer guarantees:
 
-- Removing any axiom → incomplete model  
-- Merging any axioms → loss of clarity, broken semantics  
-- Adding extra axioms → unnecessary complexity, violates minimality  
+- transparent authority graph  
+- deterministic audit trail  
+- zero hidden delegation  
+- extremely small TCB  
 
-This is the simplest possible model that still maintains:
-
-- security  
-- isolation  
-- composability  
-- distributed consistency  
-- formal provability  
+This is the cornerstone of formal verification.
 
 ---
 
-## High-Level Consequences (Not Axioms)
-From these three axioms, CORA immediately gains:
+# **4. Why exactly three axioms?**
 
-- no ambient authority  
-- no implicit sharing  
-- perfect default isolation  
-- auditable authority graph  
-- local and distributed semantics unify  
-- capability flow becomes mathematically analyzable  
+Because:
 
-These will be expanded in `cora-axioms-implications.md`.
+- They are **mutually independent**  
+- They are **collectively sufficient**  
+- They reduce CMR to the smallest possible definable universe  
+
+Adding more axioms → redundancy  
+Removing any → system becomes incomplete或不安全
+
+Three is the minimal complete set.
 
 ---
 
-## Conclusion
+# **Conclusion**
 
-CORA has exactly three axioms because:
+CMR is built on the smallest axiom set capable of defining:
 
-- each axiom is essential  
-- each defines a distinct dimension of authority  
-- together they completely describe the runtime’s semantics  
-- the set is minimal, self-contained, and closed  
+- a secure runtime  
+- a message-based universe  
+- a capability authority graph  
+- an auditable interaction model  
+- a verifiable TCB boundary  
 
-This is the philosophical and mathematical foundation of CORA.
+This rationale document exists to justify these choices for standardization and RFC evaluation.
