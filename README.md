@@ -1,1 +1,1 @@
-# CMR runtime
+# CMR: Capability Message Runtime
